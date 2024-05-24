@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import Lin
 import { searchContext } from '../context/SearchContext';
 import { navbarContext } from '../context/NavbarContext';
 import Logo from "../../public/assests/rupay-savvy-transparent.png";
-
+import HamburgerSvg from "../../public/assests/hamburger.svg"
+import { RxHamburgerMenu } from "react-icons/rx";
 function Navbar() {
     const elementRef = useRef(null);
     const navigate = useNavigate();
@@ -62,7 +63,7 @@ function Navbar() {
 
     return (
         <nav className={`navbar flex justify-between items-center w-full px-3 h-28 bg-white shadow-md`} ref={elementRef}>
-            <img src="../public/assests/hamburger.svg" alt="hamburger icon" className={`w-10 h-10 md:w-[6vw] md:h-[6vw] lg:hidden cursor-pointer ${!isHomePage && 'absolute left-3'}`} onClick={() => setisHoverToggled(!isHoverToggled)} />
+            <img src={HamburgerSvg} alt="hamburger icon" className={`w-10 h-10 md:w-[6vw] md:h-[6vw] lg:hidden cursor-pointer ${!isHomePage && 'absolute left-3'}`} onClick={() => setisHoverToggled(!isHoverToggled)} />
             <img src={Logo} alt="logo" className={`w-28 h-28 cursor-pointer ${!isHomePage && 'absolute left-1/2 transform -translate-x-1/2'} lg:relative lg:left-5 lg:translate-x-0`} onClick={handleLogoClick} />
 
             <div className='text-[1.3vw] nav-list hidden lg:block'>
@@ -88,7 +89,7 @@ function Navbar() {
             {isHoverToggled && (
                 <div className='fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 transition-transform transform duration-300 ease-in-out' onClick={handleOverlayClick}>
                     <div className='absolute top-0 left-0 w-64 bg-white h-full shadow-md p-4 transform translate-x-0 transition-transform duration-300 ease-in-out'>
-                        <ul className='list flex flex-col gap-4'>
+                        <ul className='list flex flex-col gap-4 py-5'>
                             <li><Link to="/" onClick={() => setisHoverToggled(false)}>Home</Link></li>
                             <li><Link to="/contact-us" onClick={() => setisHoverToggled(false)}>Contact Us</Link></li>
                             <li><Link to="/affiliate-disclosure" onClick={() => setisHoverToggled(false)}>Affiliate Disclosure</Link></li>

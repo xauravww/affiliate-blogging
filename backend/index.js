@@ -1,5 +1,9 @@
 import {createRequire} from "module"
+import { job } from "./cron.js";
+
 const require = createRequire(import.meta.url);
+
+
 
 const express = require('express');
 const {Client} = require('@notionhq/client');
@@ -16,7 +20,7 @@ const authToken = process.env.NOTION_INTEGRATION_TOKEN;
 const notionDbID = process.env.NOTION_DATABASE_ID;
 const notion = new Client ({auth: authToken});
 
-
+job.start()
 
 
 app.get('/posts', async(req, res) => {
@@ -35,7 +39,7 @@ app.get('/posts', async(req, res) => {
         console.log(response.results[1].cover)
         response.results.forEach(async (item)=>{
             const {properties ,id} = item
-            const {ID,CurrentPrice,PostDate,OldPrice,ProductTitle,DiscountRate,ProductAbout,Name ,PostType,ProductUrl} = properties
+            const {ID,CurrentPrice,PostDate,OldPrice,ProductTitle,DiscountRate,ProductAbout,Name ,PostType,ProductUrl,Status} = properties
 
             const blockId = id
 console.log(PostType?.select?.name)
@@ -47,6 +51,7 @@ console.log(PostType?.select?.name)
                 Name:Name.title[0]?.plain_text,blockId:blockId,
                 imgUrl:item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url,
                 ProductUrl:ProductUrl.rich_text[0]?.plain_text,
+                Status:Status?.select?.name
             }
             outputArr.push(obj)
            
@@ -117,7 +122,7 @@ app.get('/posts/:id', async(req, res) => {
         });
 
         const {properties, id, cover} = response;
-        const {ID, CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name} = properties;
+        const {ID, CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name , ProductUrl,Status} = properties;
 
         const post = {
             id: id,
@@ -130,6 +135,8 @@ app.get('/posts/:id', async(req, res) => {
             Name: Name.title[0]?.plain_text,
             blockId: id,
             imgUrl: cover?.type === 'external' ? cover?.external?.url : cover?.file?.url,
+            ProductUrl:ProductUrl.rich_text[0]?.plain_text,
+            Status:Status?.select?.name
         };
 
         res.send({success: true, data: post});
@@ -162,8 +169,11 @@ app.get('/top-posts', async (req, res) => {
 
         const outputArr = response.results.map(item => ({
             id: item.id,
-            title: item.properties.ProductTitle?.rich_text[0]?.plain_text
+            title: item.properties.ProductTitle?.rich_text[0]?.plain_text,
+            Status:item?.properties?.Status?.select?.name
         }));
+
+       console.log(response.results)
 
         res.send({success: true, data: outputArr});
     } catch (error) {
@@ -172,6 +182,10 @@ app.get('/top-posts', async (req, res) => {
     }
 });
 
+
+app.get("/",(req,res)=>{
+    res.send("Server is working")
+})
 
 app.listen(port, () => {
     console.log('server listening on port 8000!');
