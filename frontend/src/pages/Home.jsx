@@ -6,13 +6,15 @@ import Pagination from '../components/Pagination';
 import { searchContext } from '../context/SearchContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
+import Footer from '../components/Footer';
 
 function Home() {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         try {
-            axios.get("http://localhost:8000/posts").then((response) => {
+            axios.get(`${BACKEND_URL}/posts`).then((response) => {
                 console.log(response.data);
                 setPosts(response.data.data);
             });
@@ -26,7 +28,8 @@ function Home() {
 
     useEffect(() => {
         try {
-            axios.get("http://localhost:8000/posts").then((response) => {
+            
+            axios.get(`${BACKEND_URL}/posts`).then((response) => {
                 console.log(response.data);
                 setPosts(response.data.data);
             });
@@ -97,6 +100,7 @@ function Home() {
             <div className='pagination-wrapper py-5 bg-[#F2F2F2]'>
                 <Pagination totalPosts={filteredPosts.length} postPerPage={postPerPage} setcurrentPage={setcurrentPage} currentPage={currentPage} />
             </div>
+            <Footer/>
         </div>
     );
 }

@@ -1,68 +1,71 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';  // Import axios for HTTP requests
 import { navbarContext } from '../context/NavbarContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
+import Footer from '../components/Footer';
+
 function PostDetail() {
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const [post, setPost] = useState({});
     const [childrenData, setchildrenData] = useState([]);
-    const [isSeeMoreActive, setisSeeMoreActive] = useState(false);  // Assuming you need this state for "See More"
     const { id } = useParams();
-    const { isNavbarVisible, setisNavbarVisible } = useContext(navbarContext);
+    const { isNavbarVisible } = useContext(navbarContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (isNavbarVisible) {
-            console.log("navbar is visible");
-        } else {
-            console.log("navbar not visible");
-        }
+        console.log(isNavbarVisible ? "navbar is visible" : "navbar not visible");
     }, [isNavbarVisible]);
 
     useEffect(() => {
-        try {
-            axios.get(`http://localhost:8000/posts/${id}`).then((response) => {
+        axios.get(`${BACKEND_URL}/posts/${id}`)
+            .then((response) => {
                 setPost(response.data.data);
+            })
+            .catch((err) => {
+                console.log("Error fetching post data");
+                navigate('/page-not-found');
             });
-            axios.get(`http://localhost:8000/blocks/${id}`).then((response) => {
+
+        axios.get(`${BACKEND_URL}/blocks/${id}`)
+            .then((response) => {
                 setchildrenData(response.data.data);
                 console.log(childrenData);
+            })
+            .catch((err) => {
+                console.log("Error fetching blocks data");
+                navigate('/page-not-found');
             });
-        } catch (error) {
-            console.log(error);
-        }
-    }, [id]);
+    }, [id, navigate]);
 
     useEffect(() => {
         console.log(childrenData);
     }, [childrenData]);
 
     const {
-        id: postId,
         CurrentPrice,
         PostDate,
         OldPrice,
         ProductTitle,
         DiscountRate,
         ProductAbout,
-        Name,
-        blockId,
-        imgUrl,ProductUrl
-    } = post;  // Destructure post object to access its properties
+        imgUrl,
+        ProductUrl
+    } = post;
 
     const handleRedirect = () => {
-        const originalUrl = ProductUrl;
-        const convertedUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl.replace(/^www\./,'')}`;
-        window.location.href = convertedUrl;
+        window.location.href = ProductUrl;
     };
 
     return (
-        <div className='flex justify-between w-full flex-col mt-3 shadow-sm shadow-slate-400 rounded-md bg-[#F2F2F2] px-5 pb-5 lg:flex-row'>
+      <div>
+          <div className='flex justify-between w-full flex-col mt-3 shadow-sm shadow-slate-400 rounded-md bg-[#F2F2F2] px-5 pb-5 lg:flex-row'>
             <Helmet>
                 <title>{ProductTitle}</title>
                 <meta name='description' content={ProductAbout}/>
             </Helmet>
-            <div className='item-wrapper flex flex-col gap-2 rounded-md px-5 py-2 bg-white'>
+            <div className='item-wrapper flex flex-col gap-2 rounded-md px-5 bg-white'>
                 <div className='item flex justify-between gap-4'>
                     <img src={imgUrl} alt="" className='w-[20vw] h-[20vw] md:w-32 md:h-32' />
                     <div className='title-price-wrapper-outer w-full '>
@@ -83,8 +86,7 @@ function PostDetail() {
                     <button className='hidden lg:block btn rounded-md bg-[#ffa500] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>
                 </div>
                 {childrenData.map((item, index) => {
-                    const color = item?.annotations?.color || 'black'; // Handle undefined color
-                    const dynamicheaderClass = `text-2xl font-medium bg-${color === 'orange' ? "orange" : "black"} text-black`;
+                    const color = item?.annotations?.color || 'black';
 
                     if (item.type === 'paragraph' && item?.value?.includes("&DATE")) {
                         const formattedDate = new Date(PostDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -102,7 +104,7 @@ function PostDetail() {
                     }
 
                     if (color === 'green') {
-                        return <span key={index} className='text-red-800'>{item.value}</span>;
+                        return <span key={index} className='text-green-800'>{item.value}</span>;
                     }
 
                     if (color === 'red') {
@@ -115,7 +117,7 @@ function PostDetail() {
                         case 'heading_4':
                         case 'heading_5':
                         case 'heading_6':
-                            return <h1 className={dynamicheaderClass} key={index}>{item.value}</h1>;
+                            return <h1 className={`text-2xl font-medium bg-${color === 'orange' ? "orange" : "black"} text-black`} key={index}>{item.value}</h1>;
                         case 'bulleted_list_item':
                             return <li key={index}>{item.value}</li>;
                         case 'numbered_list_item':
@@ -133,7 +135,10 @@ function PostDetail() {
                 <button className='btn rounded-md bg-[#ffa500] px-6 py-2 w-full text-white lg:hidden' onClick={handleRedirect}>BUY IT NOW</button>
             </div>
             <TopPosts />
+            
         </div>
+        <Footer/>
+      </div>
     );
 }
 

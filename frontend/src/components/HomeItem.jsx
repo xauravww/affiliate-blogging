@@ -3,18 +3,19 @@ import React, { useEffect, useState } from 'react';
 
 export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, PostDate, ProductAbout, ProductTitle, blockId, id, imgUrl,ProductUrl }) {
 
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
     const [isSeeMoreActive, setisSeeMoreActive] = useState(false);
     const [data, setData] = useState(null);
 
     const handleRedirect = () => {
         const originalUrl = ProductUrl;
-        const convertedUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl.replace(/^www\./,'')}`;
-        window.location.href = convertedUrl;
+        // const convertedUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl.replace(/^www\./,'')}`;
+        window.location.href = ProductUrl;
     };
     
 
     const fetchData = () => {
-        axios.get(`http://localhost:8000/blocks/${id}`).then((response) => {
+        axios.get(`${BACKEND_URL}/blocks/${id}`).then((response) => {
             setData(response.data);
         });
     };
