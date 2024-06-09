@@ -1,19 +1,26 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import Link, useNavigate, and useLocation from react-router-dom
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { searchContext } from '../context/SearchContext';
 import { navbarContext } from '../context/NavbarContext';
 import Logo from "../../public/assests/rupay-savvy-transparent.png";
-import HamburgerSvg from "../../public/assests/hamburger.svg"
-import { RxHamburgerMenu } from "react-icons/rx";
+import HamburgerSvg from "../../public/assests/hamburger.svg";
+import { RxCross2 } from "react-icons/rx";
+import { BiSearch } from "react-icons/bi";
+
 function Navbar() {
     const elementRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const [isHoverToggled, setisHoverToggled] = useState(false);
+    // const [isHoverToggled, setisHoverToggled] = useState(false);
+    // const [isSearchActive, setisSearchActive] = useState(false);
+    // const [selectedSidebar, setselectedSidebar] = useState("home")
+
+    const { isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar} = useContext(navbarContext)
+
 
     const navItemAfterHoverCSS = "after:absolute after:bg-[#123] after:content-[''] after:h-1 after:w-0 after:left-0 after:bottom-[-10px] hover:after:w-full after:transition-all after:duration-300 after:ease-in-out";
     const { searchQuery, setSearchQuery } = useContext(searchContext);
-    const { isNavbarVisible, setisNavbarVisible } = useContext(navbarContext);
+    // const { isNavbarVisible, setisNavbarVisible } = useContext(navbarContext);
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -64,7 +71,7 @@ function Navbar() {
     return (
         <nav className={`navbar flex justify-between items-center w-full px-3 h-28 bg-white shadow-md`} ref={elementRef}>
             <img src={HamburgerSvg} alt="hamburger icon" className={`w-10 h-10 md:w-[6vw] md:h-[6vw] lg:hidden cursor-pointer ${!isHomePage && 'absolute left-3'}`} onClick={() => setisHoverToggled(!isHoverToggled)} />
-            <img src={Logo} alt="logo" className={`w-28 h-28 cursor-pointer ${!isHomePage && 'absolute left-1/2 transform -translate-x-1/2'} lg:relative lg:left-5 lg:translate-x-0`} onClick={handleLogoClick} />
+            <img src={Logo} alt="logo" className={`w-28 h-28 cursor-pointer ${(!isHomePage || isSearchActive) && 'absolute left-1/2 transform -translate-x-1/2'} lg:relative lg:left-5 lg:translate-x-0`} onClick={handleLogoClick} />
 
             <div className='text-[1.3vw] nav-list hidden lg:block'>
                 <ul className='list flex flex-wrap flex-row gap-4'>
@@ -77,29 +84,66 @@ function Navbar() {
                 </ul>
             </div>
 
-            {isHomePage && (
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    className='outline-none w-20 h-[5vw] md:w-28 md:h-10 lg:w-36 border rounded-md px-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500'
-                />
-            )}
-            {isHoverToggled && (
-                <div className='fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 transition-transform transform duration-300 ease-in-out' onClick={handleOverlayClick}>
-                    <div className='absolute top-0 left-0 w-64 bg-white h-full shadow-md p-4 transform translate-x-0 transition-transform duration-300 ease-in-out'>
-                        <ul className='list flex flex-col gap-4 py-5'>
-                            <li><Link to="/" onClick={() => setisHoverToggled(false)}>Home</Link></li>
-                            <li><Link to="/contact-us" onClick={() => setisHoverToggled(false)}>Contact Us</Link></li>
-                            <li><Link to="/affiliate-disclosure" onClick={() => setisHoverToggled(false)}>Affiliate Disclosure</Link></li>
-                            <li><Link to="/privacy-policy" onClick={() => setisHoverToggled(false)}>Privacy policy</Link></li>
-                            <li><Link to="/disclaimer" onClick={() => setisHoverToggled(false)}>Disclaimer</Link></li>
-                            <li><Link to="/terms-and-conditions" onClick={() => setisHoverToggled(false)}>Terms and conditions</Link></li>
-                        </ul>
+            {/* overlay */}
+            <div className={`absolute top-0 left-0 w-full transition-all opacity-0 ease-in-out duration-500  ${isSearchActive ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                {isSearchActive && (
+                    <div className={` bg-black opacity-85 h-28 lg:hidden transition-all `}>
+                        <RxCross2 size={30} color='white' className='absolute right-2 top-[38%]' onClick={() => setisSearchActive(false)} />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            color='white'
+                            className='absolute bg-black w-[80%] h-[50%] text-white left-10 top-[25%] outline-none text-3xl'
+                        />
                     </div>
-                </div>
+                )}
+            </div>
+
+            {isHomePage && (
+                <>
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className='outline-none hidden lg:block md:w-44 md:h-10 lg:w-72 border rounded-md px-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500'
+                    />
+                    {!isSearchActive && (
+                        <BiSearch size={28} onClick={() => setisSearchActive(true)} className='lg:hidden' />
+                    )}
+                </>
             )}
+            <div
+                className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 transition-all duration-300 ease-in-out ${isHoverToggled ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                onClick={handleOverlayClick}
+            >
+                <div
+                    className={`absolute top-0 left-0 w-64 bg-white h-full shadow-md p-4 transition-all  duration-300 ease-in-out ${isHoverToggled ? 'translate-x-0' : '-translate-x-full'}`}
+                >
+                    <ul className='list flex flex-col gap-4 py-5'>
+                        <li className={`p-2 ${selectedSidebar === 'home' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/" onClick={() => { setisHoverToggled(false); setselectedSidebar("home"); }}>Home</Link>
+                        </li>
+                        <li className={`p-2 ${selectedSidebar === 'contact-us' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/contact-us" onClick={() => { setisHoverToggled(false); setselectedSidebar("contact-us"); }}>Contact Us</Link>
+                        </li>
+                        <li className={`p-2 ${selectedSidebar === 'affiliate-disclosure' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/affiliate-disclosure" onClick={() => { setisHoverToggled(false); setselectedSidebar("affiliate-disclosure"); }}>Affiliate Disclosure</Link>
+                        </li>
+                        <li className={`p-2 ${selectedSidebar === 'privacy-policy' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/privacy-policy" onClick={() => { setisHoverToggled(false); setselectedSidebar("privacy-policy"); }}>Privacy policy</Link>
+                        </li>
+                        <li className={`p-2 ${selectedSidebar === 'disclaimer' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/disclaimer" onClick={() => { setisHoverToggled(false); setselectedSidebar("disclaimer"); }}>Disclaimer</Link>
+                        </li>
+                        <li className={`p-2 ${selectedSidebar === 'terms-and-conditions' ? 'bg-blue-500 text-white' : ''}`}>
+                            <Link to="/terms-and-conditions" onClick={() => { setisHoverToggled(false); setselectedSidebar("terms-and-conditions"); }}>Terms and conditions</Link>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
     );
 }

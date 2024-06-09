@@ -7,10 +7,12 @@ import { searchContext } from '../context/SearchContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
+import { Oval } from 'react-loader-spinner'; // Import the Oval loader
 
 function Home() {
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,6 +21,8 @@ function Home() {
                 setPosts(response.data.data);
             } catch (error) {
                 console.log("Error fetching posts data:", error);
+            } finally {
+                setLoading(false); // Set loading to false once data is fetched
             }
         };
         fetchData();
@@ -54,23 +58,34 @@ function Home() {
                         <div className='posts-map'>
                             <h2 className='text-2xl font-bold my-6'>Latest Posts</h2>
                             <div className='posts-map w-full flex flex-col items-center md:w-full'>
-                                {currentPost.map((post) => (
-                                    <HomeComp
-                                        key={post.id}
-                                        CurrentPrice={post.CurrentPrice}
-                                        DiscountRate={post.DiscountRate}
-                                        Name={post.Name}
-                                        OldPrice={post.OldPrice}
-                                        PostDate={post.PostDate}
-                                        ProductAbout={post.ProductAbout}
-                                        ProductTitle={post.ProductTitle}
-                                        blockId={post.blockId}
-                                        id={post.id}
-                                        imgUrl={post.imgUrl}
-                                        searchQuery={searchQuery}
-                                        ProductUrl={post.ProductUrl}
+                                {loading ? (
+                                    <Oval
+                                        visible={true}
+                                        height={80}
+                                        width={80}
+                                        color="#ffa500"
+                                        ariaLabel="oval-loading"
+                                        secondaryColor="#ffa500"
                                     />
-                                ))}
+                                ) : (
+                                    currentPost.map((post) => (
+                                        <HomeComp
+                                            key={post.id}
+                                            CurrentPrice={post.CurrentPrice}
+                                            DiscountRate={post.DiscountRate}
+                                            Name={post.Name}
+                                            OldPrice={post.OldPrice}
+                                            PostDate={post.PostDate}
+                                            ProductAbout={post.ProductAbout}
+                                            ProductTitle={post.ProductTitle}
+                                            blockId={post.blockId}
+                                            id={post.id}
+                                            imgUrl={post.imgUrl}
+                                            searchQuery={searchQuery}
+                                            ProductUrl={post.ProductUrl}
+                                        />
+                                    ))
+                                )}
                             </div>
                         </div>
                         <div>

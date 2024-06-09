@@ -4,8 +4,11 @@ export const navbarContext = createContext()
 
 export default function NavbarContextFunction({ children }) {
     const [isNavbarVisible, setisNavbarVisible] = useState(true);
+    const [isHoverToggled, setisHoverToggled] = useState(false);
+    const [isSearchActive, setisSearchActive] = useState(false);
+    const [selectedSidebar, setselectedSidebar] = useState("home")
     const data = {
-        isNavbarVisible, setisNavbarVisible
+        isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar
     }
     return(
         <navbarContext.Provider value={data} >
