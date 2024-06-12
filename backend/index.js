@@ -231,13 +231,13 @@ Thank you for your patience and understanding.
 Best regards,
 Rupay Savvy`
         };
-        
-        
+
+
         sendEmail(options)
         res.send({ success: true, data: response });
     } catch (error) {
         console.log(error);
-        res.status(500).send({ success: false, message: 'Internal server error' });
+        res.status(500).send({ success: false, message: error });
     }
 });
 

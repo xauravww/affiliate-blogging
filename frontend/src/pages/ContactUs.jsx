@@ -17,7 +17,7 @@ const ContactUsPage = ({ title }) => {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8000/queries', { name, email, query });
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/queries`, { name, email, query });
             console.log('Form submitted:', response.data);
             toast.success('Query sent successfully!');
             // Clear the form fields
