@@ -1,4 +1,4 @@
-export const contact = `8222050900sagar@gmail.com`
+export const contact = `rupaysavvy@gmail.com`
 
 export const affiliate = `
 Affiliate Disclosure
@@ -41,13 +41,13 @@ Our website may link to external sites that are not operated by us. Please be aw
 
 You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of your desired services.
 
-Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to us – 8222050900sagar@gmail.com
+Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to us – rupaysavvy@gmail.com
 
-Sagar Jindal, [24-05-2024 18:45]
+Rupay Savvy, [24-05-2024 18:45]
 
 Disclaimer for Rupay Savvy
 
-If you require any more information or have any questions about our site’s disclaimer, please feel free to contact us by email at 8222050900sagar@gmail.com
+If you require any more information or have any questions about our site’s disclaimer, please feel free to contact us by email at rupaysavvy@gmail.com
 
 Disclaimers for rupaysavvy.in
 
@@ -81,7 +81,7 @@ Our website may link to external sites that are not operated by us. Please be aw
 
 You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of your desired services.
 
-Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to us – 8222050900sagar@gmail.com
+Your continued use of our website will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to us – rupaysavvy@gmail.com
 `
 
 export const terms = `

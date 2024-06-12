@@ -36,6 +36,11 @@ export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, P
                 return <span key={index} className='text-blue-800'>{item.value}</span>;
             }
 
+            if (item.type === 'paragraph' && item?.value?.includes("&DATE")) {
+                const formattedDate = PostDate && !isNaN(new Date(PostDate).getTime()) ? new Date(PostDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                item.value = item.value.replace("&DATE", `<strong>${formattedDate}</strong>`);
+            }
+
             switch (item.type) {
                 case 'heading_1':
                 case 'heading_2':
