@@ -10,6 +10,7 @@ import { disclaimer, privacy, affiliate, contact, terms } from './data/data';
 import { HelmetProvider } from 'react-helmet-async';
 import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/Footer';
+import ContactUsPage from './pages/ContactUs';
 function App() {
   return (
     <div className='w-full h-screen bg-[#F2F2F2]'>
@@ -19,7 +20,8 @@ function App() {
             <Navbar />
             <Routes>
               <Route path='/:id' element={<PostDetail />} />
-              <Route path='/contact-us' element={<InfoDisplay textData={contact} title={"Contact Us"} />} />
+              {/* <Route path='/contact-us' element={<InfoDisplay textData={contact} title={"Contact Us"} />} /> */}
+              <Route path='/contact-us' element={<ContactUsPage textData={contact} title={"Contact Us"} />} />
               <Route path='/affiliate-disclosure' element={<InfoDisplay textData={affiliate} title={"Affiliate Disclosure"} />} />
               <Route path='/privacy-policy' element={<InfoDisplay textData={privacy} title={"Privacy Policy"} />} />
               <Route path='/terms-and-conditions' element={<InfoDisplay textData={terms} title={"Terms & Conditions"} />} />
