@@ -3,7 +3,7 @@ import axios from 'axios';
 import path from 'path';
 import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve(".env") });
-const baseUrl = process.env.RENDER_BACKEND_URL;
+const baseUrl = process.env.RENDER_FRONTEND_URL;
 
 const fetchPostIds = async () => {
   try {
