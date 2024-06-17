@@ -1,5 +1,5 @@
 import { createRequire } from "module";
-import { getAllPostsPageIds, getAllTopPostsPageIds, getPostBlocksUsingPageId, postQueriesToNotionDB ,getSiteMap } from "../controllers/main.js";
+import { getAllPostsPageIds, getAllTopPostsPageIds, getPostBlocksUsingPageId, postQueriesToNotionDB ,getSiteMap, getPostDetailByPageIds } from "../controllers/main.js";
 const require = createRequire(import.meta.url);
 
 const express = require("express");
@@ -11,6 +11,8 @@ const router = express.Router();
 
 router.route("/posts").get(
     getAllPostsPageIds);
+router.route("/posts/:id").get(
+    getPostDetailByPageIds);
 
 router.route("/blocks/:id").get(getPostBlocksUsingPageId);
 
