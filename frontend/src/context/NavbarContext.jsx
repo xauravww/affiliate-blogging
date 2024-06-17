@@ -7,8 +7,9 @@ export default function NavbarContextFunction({ children }) {
     const [isHoverToggled, setisHoverToggled] = useState(false);
     const [isSearchActive, setisSearchActive] = useState(false);
     const [selectedSidebar, setselectedSidebar] = useState("home")
+    const [navOverlayVisibleItems, setnavOverlayVisibleItems] = useState({"productUrl":false,"oldPrice":false,"newPrice":false})
     const data = {
-        isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar
+        isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar ,navOverlayVisibleItems, setnavOverlayVisibleItems
     }
     return(
         <navbarContext.Provider value={data} >

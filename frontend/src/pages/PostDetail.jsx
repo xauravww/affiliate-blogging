@@ -14,7 +14,7 @@ function PostDetail() {
     const [showCustomBar, setShowCustomBar] = useState(false);
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
-    const { isNavbarVisible } = useContext(navbarContext);
+    const { isNavbarVisible ,navOverlayVisibleItems, setnavOverlayVisibleItems} = useContext(navbarContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +28,8 @@ function PostDetail() {
             try {
                 const postResponse = await axios.get(`${BACKEND_URL}/posts/${id}`);
                 setPost(postResponse.data.data);
+
+                setnavOverlayVisibleItems({"productUrl":post?.ProductUrl? true:false,"oldPrice":post?.OldPrice? true:false,"newPrice":post?.CurrentPrice?true:false})
 
                 const blocksResponse = await axios.get(`${BACKEND_URL}/blocks/${id}`);
                 setchildrenData(blocksResponse.data.data);
@@ -57,6 +59,8 @@ function PostDetail() {
         ProductUrl
     } = post;
 
+   
+
     const handleRedirect = () => {
         window.location.href = ProductUrl;
     };
@@ -76,13 +80,17 @@ function PostDetail() {
                 </div>
             ) : (
                 <>
-                    {showCustomBar && (
+                    {showCustomBar && (ProductUrl || CurrentPrice || OldPrice) && (
                         <div className="custom-bar-overlay fixed w-full bg-white shadow-md h-28 flex justify-end gap-10 items-center pr-8 top-0 z-10">
                             <div className="custom-bar">
                                 <p>
-                                    <span className='line-through'>₹{OldPrice}</span>
-                                    <span className='font-bold mx-3'>₹{CurrentPrice}</span>
-                                    <button className='inline-block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>
+                                    {OldPrice && (
+                                        <span className='line-through'>₹{OldPrice}</span>
+                                    )}
+                                   {CurrentPrice && (
+                                     <span className='font-bold mx-3'>₹{CurrentPrice}</span>
+                                   )}
+                                    {ProductUrl && (<button className='inline-block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>)}
                                 </p>
                             </div>
                         </div>
@@ -99,9 +107,9 @@ function PostDetail() {
                                     <div className='title-price-wrapper-inner font-bold'>
                                         <p>{ProductTitle}</p>
                                         <div className='price-wrapper font-thin text-1xl mt-2 flex text-center flex-row flex-wrap'>
-                                            <div className='price-new text-[#ffa500] font-bold'>₹{CurrentPrice}</div>
-                                            <div className='price-old mx-2 line-through text-slate-400'>₹{OldPrice}</div>
-                                            <div className='discount-rate bg-black text-white'>{DiscountRate}</div>
+                                            {CurrentPrice && (<div className='price-new text-[#ffa500] font-bold'>₹{CurrentPrice}</div>)}
+                                            {OldPrice && (<div className='price-old mx-2 line-through text-slate-400'>₹{OldPrice}</div>)}
+                                           {DiscountRate!="0%" && (<div className='discount-rate bg-black text-white'>{DiscountRate}</div>)}
                                         </div>
                                         <p className='font-normal hidden lg:block'>{ProductAbout}</p>
                                     </div>
@@ -110,7 +118,7 @@ function PostDetail() {
                             <p className='font-normal lg:hidden'>{ProductAbout}</p>
                             <div className='meta-details-wrapper flex flex-row justify-between items-center relative'>
                                 <p className='date italic text-slate-400 text-center'>{PostDate && !isNaN(new Date(PostDate).getTime()) ? new Date(PostDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}</p>
-                                {isNavbarVisible && <button className='hidden lg:block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>}
+                                {isNavbarVisible && ProductUrl && <button className='hidden lg:block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>}
                             </div>
                             {childrenData.map((item, index) => {
                                 const color = item?.annotations?.color || 'black';
@@ -159,7 +167,9 @@ function PostDetail() {
                                         return null;
                                 }
                             })}
-                            <button className='btn rounded-md bg-[#ffa500] px-6 py-2 w-full text-white lg:hidden' onClick={handleRedirect}>BUY IT NOW</button>
+                          {ProductUrl && (
+                              <button className='btn rounded-md bg-[#ffa500] px-6 py-2 w-full text-white lg:hidden' onClick={handleRedirect}>BUY IT NOW</button>
+                          )}
                         </div>
                         <TopPosts />
                     </div>

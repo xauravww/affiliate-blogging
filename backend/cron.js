@@ -1,23 +1,20 @@
-import {createRequire} from "module"
-
+import { createRequire } from "module";
+import path from "path";
+import dotenv from "dotenv";
+import cron from "node-cron";
+import https from "https";
+import generateSitemap from './generateSitemap.js';
 
 const require = createRequire(import.meta.url);
-
-
-
-const cron = require("node-cron");
-const https = require("https");
-const path = require("path");
-const dotenv = require("dotenv");
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(".env") });
 const backendUrl = process.env.RENDER_BACKEND_URL;
 
-// Define the cron job
-const job = cron.schedule("*/13 * * * *", async () => {
+// 13-minute interval job for server health check
+const healthCheckJob = cron.schedule("*/13 * * * *", async () => {
   try {
-    // Perform an HTTPS GET request to hit any backend api.
+    // Perform an HTTPS GET request to hit any backend API
     const response = await new Promise((resolve, reject) => {
       https.get(backendUrl, (res) => {
         let data = "";
@@ -33,16 +30,23 @@ const job = cron.schedule("*/13 * * * *", async () => {
     });
 
     if (response.statusCode === 200) {
-      // console.log("Server restarted");
+      console.log("Server health check successful");
     } else {
-      console.error(`Failed to restart server with status code: ${response.statusCode}`);
+      console.error(`Server health check failed with status code: ${response.statusCode}`);
     }
+
   } catch (err) {
-    console.error("Error during Restart:", err.message);
+    console.error("Error during health check:", err.message);
   }
 });
 
-// Export the cron job
-// module.exports = { job };
+// Midnight job for sitemap generation
+const sitemapJob = cron.schedule("0 0 * * *", async () => {
+  try {
+    await generateSitemap();
+  } catch (err) {
+    console.error("Error during sitemap generation:", err.message);
+  }
+});
 
-export {job}
+export { healthCheckJob, sitemapJob };

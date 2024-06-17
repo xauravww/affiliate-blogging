@@ -1,5 +1,5 @@
 {
-  "name": "notion-backend",
+  "name": "affiliate-blogging-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@notionhq/client": "^2.2.14",
+    "axios": "^1.7.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

@@ -75,9 +75,9 @@ export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, P
                         <div className='title-price-wrapper-inner font-bold w-full'>
                             <p>{ProductTitle}</p>
                             <div className='price-wrapper font-thin text-1xl mt-2 flex text-center flex-row flex-wrap'>
-                                <div className='price-new text-[#ffa500]  font-bold'>₹{CurrentPrice}</div>
-                                <div className='price-old mx-2 line-through text-slate-400'>₹{OldPrice}</div>
-                                <div className='discount-rate bg-black text-white'>{DiscountRate}</div>
+                                {CurrentPrice && (<div className='price-new text-[#ffa500]  font-bold'>₹{CurrentPrice}</div>)}
+                                {OldPrice && (<div className='price-old mx-2 line-through text-slate-400'>₹{OldPrice}</div>)}
+                                {DiscountRate!=="0%" && (<div className='discount-rate bg-black text-white'>{DiscountRate}</div>)}
                             </div>
                             <p className='font-normal hidden lg:block'>{ProductAbout}</p>
                         </div>
@@ -86,10 +86,12 @@ export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, P
                 <p className='font-normal lg:hidden'>{ProductAbout}</p>
                 <div className='meta-details-wrapper flex flex-row justify-between items-center relative'>
                     <p className='date italic text-slate-400 text-center'>{PostDate}</p>
-                    <button className='hidden lg:block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={(event) => {
+                   {ProductUrl && (
+                     <button className='hidden lg:block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={(event) => {
                         event.stopPropagation();
                         handleRedirect();
                     }}>BUY IT NOW</button>
+                   )}
                     <button className='btn bg-slate-200 px-3 lg:absolute left-3 top-[-50px]' onClick={(event) => {
                         event.stopPropagation();
                         setisSeeMoreActive(!isSeeMoreActive);
@@ -101,10 +103,14 @@ export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, P
                         {renderContent()}
                     </div>
                 )}
-                <button className='btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-2 w-full text-white lg:hidden' onClick={(event) => {
+
+               {ProductUrl && (
+                 <button className='btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-2 w-full text-white lg:hidden' onClick={(event) => {
                     event.stopPropagation();
                     handleRedirect();
                 }}>BUY IT NOW</button>
+               )
+               }
             </div>
         </div>
     );

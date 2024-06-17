@@ -15,7 +15,7 @@ function Navbar() {
     // const [isSearchActive, setisSearchActive] = useState(false);
     // const [selectedSidebar, setselectedSidebar] = useState("home")
 
-    const { isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar} = useContext(navbarContext)
+    const { isNavbarVisible, setisNavbarVisible,isHoverToggled, setisHoverToggled,isSearchActive, setisSearchActive,selectedSidebar, setselectedSidebar,navOverlayVisibleItems} = useContext(navbarContext)
 
 
     const navItemAfterHoverCSS = "after:absolute after:bg-[#123] after:content-[''] after:h-1 after:w-0 after:left-0 after:bottom-[-10px] hover:after:w-full after:transition-all after:duration-300 after:ease-in-out";
