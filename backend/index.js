@@ -1,6 +1,7 @@
 import { createRequire } from "module";
 import { healthCheckJob, sitemapJob } from './cron.js';
 import mainRoute from "./routes/main.js";
+import generateSitemap from "./generateSitemap.js";
 
 const require = createRequire(import.meta.url);
 
@@ -16,6 +17,8 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(jsonParser);
+
+generateSitemap()
 
 
 
