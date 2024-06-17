@@ -4,10 +4,11 @@ import path from 'path';
 import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve(".env") });
 const baseUrl = process.env.RENDER_FRONTEND_URL;
+const backendUrl = process.env.RENDER_BACKEND_URL;
 
 const fetchPostIds = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/posts`);
+    const response = await axios.get(`${backendUrl}/posts`);
     const postIds = response.data.data.map(post => post.id);
     return postIds;
   } catch (error) {
