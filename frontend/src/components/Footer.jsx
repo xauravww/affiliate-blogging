@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn ,FaPinterest } from 'react-icons/fa';
 import { navbarContext } from '../context/NavbarContext';
 import { Link } from 'react-router-dom';
 
@@ -17,14 +17,14 @@ function Footer() {
                     <a href={import.meta.env.VITE_FB_URL} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white mx-2">
                         <FaFacebookF size="20" />
                     </a>
-                    <a href={import.meta.env.VITE_TWITTER_URL} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white mx-2">
-                        <FaTwitter size="20" />
-                    </a>
                     <a href={import.meta.env.VITE_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white mx-2">
                         <FaInstagram size="20" />
                     </a>
                     <a href={import.meta.env.VITE_LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white mx-2">
                         <FaLinkedinIn size="20" />
+                    </a>
+                    <a href={import.meta.env.VITE_PINTEREST_URL} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white mx-2">
+                        <FaPinterest size="20" />
                     </a>
                 </div>
             </div>

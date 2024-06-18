@@ -11,6 +11,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/Footer';
 import ContactUsPage from './pages/ContactUs';
+
+import robotstxtfile from '../public/robots.txt'
 function App() {
   return (
     <div className='w-full h-screen bg-[#F2F2F2]'>
@@ -28,6 +30,7 @@ function App() {
               <Route path='/disclaimer' element={<InfoDisplay textData={disclaimer} title={"Disclaimer"} />} />
               <Route path='/' element={<Home />} title={"Home Page"} />
               <Route path='/page-not-found' element={<NotFoundPage />} title={"404 Not Found"} />
+              <Route path='/robots.txt' element={robotstxtfile} />
               <Route path='/*' element={<NotFoundPage />} title={"404 Not Found"} />
             </Routes>
            
