@@ -42,8 +42,7 @@ const notion = new Client({ auth: authToken });
 
 
 
-
-export const getPostDetailByPageIds =  async (req, res) => {
+export const getPostDetailByPageIds = async (req, res) => {
     try {
         const postId = req.params.id;
 
@@ -56,7 +55,7 @@ export const getPostDetailByPageIds =  async (req, res) => {
         });
 
         const { properties, id, cover } = response;
-        const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status } = properties;
+        const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status, Category } = properties;
 
         const post = {
             id: id,
@@ -70,7 +69,8 @@ export const getPostDetailByPageIds =  async (req, res) => {
             blockId: id,
             imgUrl: cover?.type === 'external' ? cover?.external?.url : cover?.file?.url,
             ProductUrl: ProductUrl.rich_text[0]?.plain_text,
-            Status: Status?.select?.name
+            Status: Status?.select?.name,
+            Category: Category?.multi_select.map(cat => cat.name) // Retrieve and map the Category multi-select property
         };
 
         res.send({ success: true, data: post });
@@ -301,7 +301,7 @@ export const getAllPostsPageIds = async (req, res) => {
 
         const outputArr = response.results.map(item => {
             const { properties, id } = item;
-            const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status } = properties;
+            const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status, Category } = properties;
 
             return {
                 id: id,
@@ -315,7 +315,8 @@ export const getAllPostsPageIds = async (req, res) => {
                 blockId: id,
                 imgUrl: item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url,
                 ProductUrl: ProductUrl?.rich_text[0]?.plain_text,
-                Status: Status?.select?.name
+                Status: Status?.select?.name,
+                Category: Category?.multi_select.map(cat => cat.name) // Retrieve and map the Category multi-select property
             };
         });
 
@@ -334,6 +335,70 @@ export const getAllPostsPageIds = async (req, res) => {
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
 };
+
+
+export const getPageIdsOfSameCategory = async (req, res) => {
+    try {
+        const { category, excludeId } = req.body;
+        
+        // Check if category is not provided or is an empty array
+        if (!category || (Array.isArray(category) && category.length === 0)) {
+            return res.status(400).send({ success: false, message: 'Category is required and cannot be empty' });
+        }
+
+        // Parse category if it's a stringified JSON array
+        const categories = typeof category === 'string' ? JSON.parse(category) : category;
+
+        // Create filter for each category item
+        const categoryFilters = categories.map(cat => ({
+            property: 'Category',
+            multi_select: {
+                contains: cat
+            }
+        }));
+
+        // Query the database to find pages with the given categories and status "LIVE"
+        const response = await notion.databases.query({
+            database_id: notionDbID,
+            filter: {
+                and: [
+                    ...categoryFilters,
+                    {
+                        property: 'Status',
+                        select: {
+                            equals: 'LIVE'
+                        }
+                    }
+                ]
+            },
+            sorts: [
+                {
+                    timestamp: 'created_time',
+                    direction: 'descending',
+                },
+            ],
+            page_size: 6,
+        });
+
+        let outputArr = response.results.map(item => ({
+            id: item.id,
+            title: item.properties.ProductTitle?.rich_text[0]?.plain_text,
+            price: item.properties.CurrentPrice?.number,
+            imgUrl: item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url
+        }));
+
+        if (excludeId) {
+            outputArr = outputArr.filter(item => item.id !== excludeId);
+        }
+
+        res.send({ success: true, data: outputArr });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+};
+
+
 
 export const getSiteMap = async (req,res)=>{
     res.sendFile(path.resolve('public/sitemap.xml'));

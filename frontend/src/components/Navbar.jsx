@@ -96,6 +96,7 @@ function Navbar() {
                             onChange={handleSearchChange}
                             color='white'
                             className='absolute bg-black w-[80%] h-[50%] text-white left-10 top-[25%] outline-none text-3xl'
+                            maxLength={25}
                         />
                     </div>
                 )}
@@ -109,6 +110,7 @@ function Navbar() {
                         value={searchQuery}
                         onChange={handleSearchChange}
                         className='outline-none hidden lg:block md:w-44 md:h-10 lg:w-72 border rounded-md px-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500'
+                        maxLength={25}
                     />
                     {!isSearchActive && (
                         <BiSearch size={28} onClick={() => setisSearchActive(true)} className='lg:hidden' />

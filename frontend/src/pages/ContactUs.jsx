@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import { Oval } from 'react-loader-spinner';
+import 'ldrs/bouncy'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -96,13 +96,13 @@ const ContactUsPage = ({ title }) => {
                         </div>
                         {loading && (
                             <div className="flex justify-center mt-4">
-                                <Oval color="#00BFFF" height={40} width={40} />
+                                 <l-bouncy></l-bouncy>
                             </div>
                         )}
                     </form>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
             <ToastContainer />
         </div>
     );

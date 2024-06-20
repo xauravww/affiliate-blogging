@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Pagination = ({ totalPosts, postPerPage, setCurrentPage, currentPage, totalPages }) => {
+const Pagination = ({ totalPosts, postPerPage, setCurrentPage, currentPage, totalPages , setLoading }) => {
   const maxDisplayedPages = 5; // Adjust this value as needed
 
   const getDisplayedPages = () => {
@@ -50,15 +50,18 @@ const Pagination = ({ totalPosts, postPerPage, setCurrentPage, currentPage, tota
       {getDisplayedPages().map((page, index) => (
         <button
           key={index}
-          className='text-white text-3xl px-2 font-bold rounded-full'
+          className='text-white text-2xl px-2 py-1 font-bold rounded-full'
           style={
             page === currentPage
               ? { backgroundColor: '#FFA500', color: 'white' }
               : { backgroundColor: 'black' }
           }
           onClick={() => {
+
             if (typeof page === 'number') {
+              setLoading(true)
               setCurrentPage(page);
+              window.scrollTo(0,0)
             }
           }}
         >

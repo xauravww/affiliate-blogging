@@ -12,12 +12,13 @@ function InfoDisplay({ textData, title }) {
   ));
 
   return (
-    <>
-      <div className='flex flex-col justify-between w-full mt-3 rounded-md bg-[#F2F2F2] lg:flex-row'>
+   <div className='bg-[#F2F2F2]'>
+       <div className='flex flex-col justify-between w-full mt-3 rounded-md bg-[#F2F2F2] lg:flex-row lg:max-w-[80vw]'>
         <Helmet>
           <title>{title}</title>
           <meta name='description' content={textData} />
         </Helmet>
+        
         <div className='w-full p-5'>
           <div className='border border-red p-5 bg-white rounded-md'>
             <div className='text-block'>
@@ -27,8 +28,8 @@ function InfoDisplay({ textData, title }) {
         </div>
         <TopPosts />
       </div>
-      <Footer />
-    </>
+      {/* <Footer /> */}
+   </div>
   );
 }
 

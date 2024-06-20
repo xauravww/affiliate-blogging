@@ -17,6 +17,7 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(jsonParser);
+// app.use(express.json())
 
 generateSitemap()
 

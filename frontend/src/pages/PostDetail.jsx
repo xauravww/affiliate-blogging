@@ -5,7 +5,8 @@ import { navbarContext } from '../context/NavbarContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
-import { Oval } from 'react-loader-spinner';
+import 'ldrs/bouncy';
+import RelatedPosts from '../components/RelatedPosts';
 
 function PostDetail() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -13,8 +14,9 @@ function PostDetail() {
     const [childrenData, setchildrenData] = useState([]);
     const [showCustomBar, setShowCustomBar] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [category, setCategory] = useState([]); // Changed variable name from 'setcategory' to 'setCategory'
     const { id } = useParams();
-    const { isNavbarVisible ,navOverlayVisibleItems, setnavOverlayVisibleItems} = useContext(navbarContext);
+    const { isNavbarVisible, navOverlayVisibleItems, setnavOverlayVisibleItems } = useContext(navbarContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,14 +29,23 @@ function PostDetail() {
             setLoading(true); // Set loading to true before starting the fetch
             try {
                 const postResponse = await axios.get(`${BACKEND_URL}/posts/${id}`);
-                setPost(postResponse.data.data);
+                const postData = postResponse.data.data;
+                setPost(postData);
 
-                setnavOverlayVisibleItems({"productUrl":post?.ProductUrl? true:false,"oldPrice":post?.OldPrice? true:false,"newPrice":post?.CurrentPrice?true:false})
+                // Extract and set category from post data
+                const categoryFromPost = postData?.Category || [];
+                setCategory(categoryFromPost);
+
+                setnavOverlayVisibleItems({
+                    "productUrl": postData?.ProductUrl ? true : false,
+                    "oldPrice": postData?.OldPrice ? true : false,
+                    "newPrice": postData?.CurrentPrice ? true : false
+                });
 
                 const blocksResponse = await axios.get(`${BACKEND_URL}/blocks/${id}`);
                 setchildrenData(blocksResponse.data.data);
             } catch (err) {
-                console.log("Error fetching data");
+                console.log("Error fetching data:", err);
                 navigate('/page-not-found');
             } finally {
                 setLoading(false); // Set loading to false after fetch completes
@@ -42,7 +53,7 @@ function PostDetail() {
         };
 
         fetchData();
-    }, [id, navigate, BACKEND_URL]);
+    }, [id, navigate, BACKEND_URL, setnavOverlayVisibleItems]);
 
     useEffect(() => {
         console.log(childrenData);
@@ -56,30 +67,22 @@ function PostDetail() {
         DiscountRate,
         ProductAbout,
         imgUrl,
-        ProductUrl
+        ProductUrl,
+        Category // Ensure Category is destructured properly
     } = post;
-
-   
 
     const handleRedirect = () => {
         window.location.href = ProductUrl;
     };
 
     return (
-        <div>
+        <div className='bg-[#F2F2F2]'>
             {loading ? (
                 <div className="flex justify-center items-center h-screen">
-                    <Oval
-                        visible={true}
-                        height="80"
-                        width="80"
-                        color="#ffa500"
-                        ariaLabel="oval-loading"
-                        secondaryColor="#ffa500"
-                    />
+                    <l-bouncy></l-bouncy>
                 </div>
             ) : (
-                <>
+                <div className='bg-[#F2F2F2]'>
                     {showCustomBar && (ProductUrl || CurrentPrice || OldPrice) && (
                         <div className="custom-bar-overlay fixed w-full bg-white shadow-md h-28 flex justify-end gap-10 items-center pr-8 top-0 z-10">
                             <div className="custom-bar">
@@ -87,20 +90,20 @@ function PostDetail() {
                                     {OldPrice && (
                                         <span className='line-through'>₹{OldPrice}</span>
                                     )}
-                                   {CurrentPrice && (
-                                     <span className='font-bold mx-3'>₹{CurrentPrice}</span>
-                                   )}
+                                    {CurrentPrice && (
+                                        <span className='font-bold mx-3'>₹{CurrentPrice}</span>
+                                    )}
                                     {ProductUrl && (<button className='inline-block btn rounded-md bg-[#ffa500] hover:bg-[#dbaf5d] px-6 py-1 w-auto text-white' onClick={handleRedirect}>BUY IT NOW</button>)}
                                 </p>
                             </div>
                         </div>
                     )}
-                    <div className='flex justify-between w-full flex-col mt-3 shadow-sm shadow-slate-400 rounded-md bg-[#F2F2F2] px-5 pb-5 lg:flex-row'>
+                    <div className='flex justify-around w-full flex-col mt-3 shadow-sm shadow-slate-400 rounded-md bg-[#F2F2F2] px-5 pb-5 lg:flex-row'>
                         <Helmet>
                             <title>{ProductTitle}</title>
                             <meta name='description' content={ProductAbout} />
                         </Helmet>
-                        <div className='item-wrapper flex flex-col gap-2 rounded-md p-5 bg-white'>
+                        <div className='item-wrapper w-full flex flex-col gap-2 rounded-md p-5 bg-white lg:w-[60vw]'>
                             <div className='item flex justify-between gap-4'>
                                 <img src={imgUrl} alt="" className='w-[20vw] h-[20vw] md:w-32 md:h-32' />
                                 <div className='title-price-wrapper-outer w-full'>
@@ -109,7 +112,7 @@ function PostDetail() {
                                         <div className='price-wrapper font-thin text-1xl mt-2 flex text-center flex-row flex-wrap'>
                                             {CurrentPrice && (<div className='price-new text-[#ffa500] font-bold'>₹{CurrentPrice}</div>)}
                                             {OldPrice && (<div className='price-old mx-2 line-through text-slate-400'>₹{OldPrice}</div>)}
-                                           {DiscountRate!="0%" && (<div className='discount-rate bg-black text-white'>{DiscountRate}</div>)}
+                                            {DiscountRate !== "0%" && (<div className='discount-rate bg-black text-white'>{DiscountRate}</div>)}
                                         </div>
                                         <p className='font-normal hidden lg:block'>{ProductAbout}</p>
                                     </div>
@@ -152,7 +155,7 @@ function PostDetail() {
                                     case 'heading_4':
                                     case 'heading_5':
                                     case 'heading_6':
-                                        return <h1 className={`text-2xl font-medium  text-black`} key={index}>{item.value}</h1>;
+                                        return <h1 className={`text-2xl font-medium text-black`} key={index}>{item.value}</h1>;
                                     case 'bulleted_list_item':
                                         return <li key={index}>{item.value}</li>;
                                     case 'numbered_list_item':
@@ -167,15 +170,17 @@ function PostDetail() {
                                         return null;
                                 }
                             })}
-                          {ProductUrl && (
-                              <button className='btn rounded-md bg-[#ffa500] px-6 py-2 w-full text-white lg:hidden' onClick={handleRedirect}>BUY IT NOW</button>
-                          )}
+                            {ProductUrl && (
+                                <button className='btn rounded-md bg-[#ffa500] px-6 py-2 w-full text-white lg:hidden' onClick={handleRedirect}>BUY IT NOW</button>
+                            )}
                         </div>
                         <TopPosts />
                     </div>
-                    <Footer />
-                </>
+                    {/* <Footer /> */}
+
+                </div>
             )}
+            <RelatedPosts category={category} excludeId={id} />
         </div>
     );
 }

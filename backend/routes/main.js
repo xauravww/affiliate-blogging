@@ -1,5 +1,5 @@
 import { createRequire } from "module";
-import { getAllPostsPageIds, getAllTopPostsPageIds, getPostBlocksUsingPageId, postQueriesToNotionDB ,getSiteMap, getPostDetailByPageIds ,searchPosts } from "../controllers/main.js";
+import { getAllPostsPageIds, getAllTopPostsPageIds, getPostBlocksUsingPageId, postQueriesToNotionDB ,getSiteMap, getPostDetailByPageIds ,searchPosts ,getPageIdsOfSameCategory } from "../controllers/main.js";
 const require = createRequire(import.meta.url);
 
 const express = require("express");
@@ -21,7 +21,7 @@ router.route("/top-posts").get(getAllTopPostsPageIds);
 
 router.route("/queries").post(postQueriesToNotionDB);
 router.route("/search").get(searchPosts);
-
+router.route("/category").post(getPageIdsOfSameCategory)
 router.route("/get-sitemap").get(getSiteMap)
 
 

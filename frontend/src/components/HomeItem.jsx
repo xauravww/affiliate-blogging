@@ -65,7 +65,7 @@ export default function HomeComp({ CurrentPrice, DiscountRate, Name, OldPrice, P
     };
 
     return (
-        <div className='container min-w-[60vw] max-w-[90vw] mt-3 shadow-sm shadow-slate-400 rounded-md cursor-pointer'
+        <div className='container min-w-[60vw] max-w-[90vw] mt-3 shadow-sm shadow-slate-400 rounded-md cursor-pointer lg:max-w-[70vw]'
             onClick={() => navigate(`/${id}`)}
         >
             <div className='item-wrapper w-full flex flex-col gap-2 rounded-md px-5 py-2 bg-white'>

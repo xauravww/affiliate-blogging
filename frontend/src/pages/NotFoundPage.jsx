@@ -21,7 +21,7 @@ const NotFoundPage = ({ title }) => {
                     </button>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 };
