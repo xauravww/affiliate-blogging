@@ -20,7 +20,7 @@ const RelatedPosts = ({ category, excludeId }) => {
                 return
             }
             try {
-                const response = await axios.post(`${VITE_BACKEND_URL}/category`, { category: JSON.stringify(category), excludeId });
+                const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/category`, { category: JSON.stringify(category), excludeId });
                 console.log(response.data.data)
                 if (isMounted) { 
                     setRelatedPosts(response.data.data);
