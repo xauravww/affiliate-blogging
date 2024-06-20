@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
 import HomeComp from '../components/HomeItem';
 import axios from 'axios';
 import Pagination from '../components/Pagination';
@@ -7,43 +6,83 @@ import { searchContext } from '../context/SearchContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
-import { Oval } from 'react-loader-spinner'; // Import the Oval loader
+import { Oval } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import debounce from 'debounce';
 
 function Home() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const { searchQuery, setSearchQuery } = useContext(searchContext);
+    const [startCursor, setStartCursor] = useState("");
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [showSearchMessage, setShowSearchMessage] = useState(false); // State to control when to show search message
+
+    // Function to fetch data from backend
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            let endpoint = searchQuery ? `${BACKEND_URL}/search` : `${BACKEND_URL}/posts`;
+
+            if (startCursor) {
+                endpoint += `?startCursor=${startCursor}`;
+            }
+
+            const response = await axios.get(endpoint, {
+                params: { query: searchQuery, page: currentPage }
+            });
+
+            setPosts(response.data.data);
+            setTotalPages(response.data.totalPages);
+            setTotalPosts(response.data.totalPosts);
+            setStartCursor(response.data.nextCursor);
+            setShowSearchMessage(true); // Show search message after data is fetched successfully
+
+        } catch (error) {
+            setSearchQuery("");
+            console.log(error);
+            toast.error("Please wait a few seconds between searches...");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Debounced version of fetchData with a delay of 2000 milliseconds (2 seconds)
+    const debouncedFetchData = debounce(fetchData, 2000);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${BACKEND_URL}/posts`);
-                setPosts(response.data.data);
-            } catch (error) {
-                console.log("Error fetching posts data:", error);
-            } finally {
-                setLoading(false); // Set loading to false once data is fetched
-            }
+        // Execute debouncedFetchData when searchQuery or currentPage changes
+        debouncedFetchData();
+
+        // Cleanup function to cancel debouncedFetchData on component unmount or when searchQuery changes
+        return () => {
+            debouncedFetchData.clear(); // Clear the debounced function on cleanup
         };
-        fetchData();
-    }, [BACKEND_URL]);
+    }, [currentPage, searchQuery]); // Adjust dependencies as per your specific needs
 
-    const { searchQuery } = useContext(searchContext);
-    const navigate = useNavigate();
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const query = e.target.search.value;
+        setSearchQuery(query);
+        setCurrentPage(1);
+        setStartCursor("");
+        setPosts([]);
+        setTotalPosts(0);
+        setShowSearchMessage(false); // Hide search message when starting new search
+    };
 
-    const filteredPosts = posts.filter((post) => {
-        const searchFields = ['ProductTitle', 'ProductAbout', 'Name', 'PostDate'];
-        const matchesSearchQuery = searchFields.some((field) =>
-            post[field]?.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        return post.Status === 'LIVE' && matchesSearchQuery;
-    });
+    // Filter posts that are LIVE
+    const filteredPosts = posts.filter((post) => post.Status === 'LIVE');
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postPerPage] = useState(10);
-    const lastPageIndex = currentPage * postPerPage;
-    const firstPageIndex = lastPageIndex - postPerPage;
-    const currentPost = filteredPosts.slice(firstPageIndex, lastPageIndex);
+    useEffect(() => {
+        setLoading(true)
+        setStartCursor(null);
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     return (
         <div className='main bg-[#F2F2F2] h-full'>
@@ -53,10 +92,17 @@ function Home() {
             </Helmet>
 
             <div className='for-padding-wrapper bg-[#F2F2F2] px-5 lg:px-10 w-full'>
-                <div className='wrHomeer-main-outer w-full bg-[#F2F2F2]'>
-                    <div className='wrapper-flexing flex flex-col lg:flex-row'>
+                <div className='wrapper-main-outer w-full bg-[#F2F2F2]'>
+                    <div className='wrapper-flexing flex flex-col justify-between lg:flex-row'>
                         <div className='posts-map'>
-                            <h2 className='text-2xl font-bold my-6'>Latest Posts</h2>
+                            <h2 className='text-2xl font-bold my-6'>
+                                {searchQuery && showSearchMessage ?
+                                    (!loading ?
+                                        (totalPosts >= 0 ? `${totalPosts} ${totalPosts !== 1 ? 'items' : 'item'} found for "${searchQuery}"` : `No items found for "${searchQuery}"`)
+                                        : `Searching for "${searchQuery}" ...`)
+                                    : 'Latest Posts'}
+                            </h2>
+
                             <div className='posts-map w-full flex flex-col items-center md:w-full'>
                                 {loading ? (
                                     <Oval
@@ -68,7 +114,7 @@ function Home() {
                                         secondaryColor="#ffa500"
                                     />
                                 ) : (
-                                    currentPost.map((post) => (
+                                    filteredPosts.map((post) => (
                                         <HomeComp
                                             key={post.id}
                                             CurrentPrice={post.CurrentPrice}
@@ -97,9 +143,18 @@ function Home() {
                 </div>
             </div>
             <div className='pagination-wrapper py-5 bg-[#F2F2F2]'>
-                <Pagination totalPosts={filteredPosts.length} postPerPage={postPerPage} setcurrentPage={setCurrentPage} currentPage={currentPage} />
+                {!loading && (
+                    <Pagination
+                        totalPosts={totalPosts}
+                        postPerPage={10}
+                        setCurrentPage={setCurrentPage}
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                    />
+                )}
             </div>
             <Footer />
+            <ToastContainer />
         </div>
     );
 }

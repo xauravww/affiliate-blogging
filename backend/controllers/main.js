@@ -39,46 +39,9 @@ const notion = new Client({ auth: authToken });
     }
 }
 
-export const getAllPostsPageIds =  async (req, res) => {
-    try {
-        const response = await notion.databases.query({
-            database_id: notionDbID,
-            sorts: [
-                {
-                    timestamp: 'created_time',
-                    direction: 'descending',
-                },
-            ]
-        });
-        const outputArr = [];
-        const { results } = response;
-        response.results.forEach((item) => {
-            const { properties, id } = item;
-            const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, PostType, ProductUrl, Status } = properties;
 
-            const obj = {
-                id: id,
-                CurrentPrice: CurrentPrice?.number,
-                PostDate: PostDate?.date?.start,
-                OldPrice: OldPrice?.number,
-                ProductTitle: ProductTitle?.rich_text[0]?.plain_text,
-                DiscountRate: DiscountRate?.formula?.string,
-                ProductAbout: ProductAbout?.rich_text[0]?.plain_text,
-                Name: Name.title[0]?.plain_text,
-                blockId: id,
-                imgUrl: item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url,
-                ProductUrl: ProductUrl.rich_text[0]?.plain_text,
-                Status: Status?.select?.name
-            };
-            outputArr.push(obj);
-        });
 
-        res.send({ success: true, data: outputArr });
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({ success: false, message: 'Internal server error' });
-    }
-}
+
 
 export const getPostDetailByPageIds =  async (req, res) => {
     try {
@@ -218,8 +181,159 @@ Rupay Savvy`
     }
 }
 
+export const searchPosts = async (req, res) => {
+    try {
+        const { query, pageSize = 10, startCursor } = req.query;
+
+        if (!query) {
+            return res.status(400).send({ success: false, message: 'Search query is required' });
+        }
+
+        const filter = {
+            or: [
+                {
+                    property: 'ProductTitle',
+                    rich_text: {
+                        contains: query
+                    }
+                },
+                {
+                    property: 'ProductAbout',
+                    rich_text: {
+                        contains: query
+                    }
+                },
+                {
+                    property: 'Name',
+                    title: {
+                        contains: query
+                    }
+                }
+            ]
+        };
+
+        const queryOptions = {
+            database_id: notionDbID,
+            filter,
+            sorts: [
+                {
+                    property: 'PostDate',
+                    direction: 'descending'
+                }
+            ],
+            page_size: parseInt(pageSize),
+        };
+
+        if (startCursor) {
+            queryOptions.start_cursor = startCursor;
+        }
+
+        const response = await notion.databases.query(queryOptions);
+
+        const outputArr = response.results.map(item => {
+            const { properties, id } = item;
+            const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status } = properties;
+
+            return {
+                id: id,
+                CurrentPrice: CurrentPrice?.number,
+                PostDate: PostDate?.date?.start,
+                OldPrice: OldPrice?.number,
+                ProductTitle: ProductTitle?.rich_text[0]?.plain_text,
+                DiscountRate: DiscountRate?.formula?.string,
+                ProductAbout: ProductAbout?.rich_text[0]?.plain_text,
+                Name: Name?.title[0]?.plain_text,
+                imgUrl: item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url,
+                ProductUrl: ProductUrl?.rich_text[0]?.plain_text,
+                Status: Status?.select?.name
+            };
+        });
+
+        const totalPostsResponse = await notion.databases.query({ database_id: notionDbID, filter });
+        const totalPosts = totalPostsResponse.results.length;
+        const totalPages = Math.ceil(totalPosts / parseInt(pageSize));
+
+        res.send({
+            success: true,
+            data: outputArr,
+            totalPosts,
+            totalPages,
+            nextCursor: response.next_cursor,
+            hasMore: response.has_more
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+};
 
 
+
+export const getAllPostsPageIds = async (req, res) => {
+    try {
+        const { pageSize = 10, startCursor } = req.query;
+
+        // Fetch total number of posts
+        const countResponse = await notion.databases.query({
+            database_id: notionDbID,
+        });
+        const totalPosts = countResponse.results.length;
+
+        // Prepare query options
+        const queryOptions = {
+            database_id: notionDbID,
+            sorts: [
+                {
+                    timestamp: 'created_time',
+                    direction: 'descending',
+                },
+            ],
+            page_size: parseInt(pageSize),
+        };
+
+        // If startCursor is provided, add it to query options
+        if (startCursor) {
+            queryOptions.start_cursor = startCursor;
+        }
+
+        // Execute database query
+        const response = await notion.databases.query(queryOptions);
+
+        const outputArr = response.results.map(item => {
+            const { properties, id } = item;
+            const { CurrentPrice, PostDate, OldPrice, ProductTitle, DiscountRate, ProductAbout, Name, ProductUrl, Status } = properties;
+
+            return {
+                id: id,
+                CurrentPrice: CurrentPrice?.number,
+                PostDate: PostDate?.date?.start,
+                OldPrice: OldPrice?.number,
+                ProductTitle: ProductTitle?.rich_text[0]?.plain_text,
+                DiscountRate: DiscountRate?.formula?.string,
+                ProductAbout: ProductAbout?.rich_text[0]?.plain_text,
+                Name: Name?.title[0]?.plain_text,
+                blockId: id,
+                imgUrl: item.cover?.type === 'external' ? item.cover?.external?.url : item.cover?.file?.url,
+                ProductUrl: ProductUrl?.rich_text[0]?.plain_text,
+                Status: Status?.select?.name
+            };
+        });
+
+        const totalPages = Math.ceil(totalPosts / parseInt(pageSize));
+
+        res.send({
+            success: true,
+            data: outputArr,
+            totalPosts,
+            totalPages,
+            nextCursor: response.next_cursor,
+            hasMore: response.has_more
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+};
 
 export const getSiteMap = async (req,res)=>{
     res.sendFile(path.resolve('public/sitemap.xml'));

@@ -7,7 +7,7 @@ import SearchContextFunction from './context/SearchContext';
 import NavbarContextFunction from './context/NavbarContext';
 import InfoDisplay from './pages/InfoDisplay';
 import { disclaimer, privacy, affiliate, contact, terms } from './data/data';
-import { HelmetProvider } from 'react-helmet-async';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/Footer';
 import ContactUsPage from './pages/ContactUs';
@@ -17,6 +17,10 @@ function App() {
   return (
     <div className='w-full h-screen bg-[#F2F2F2]'>
       <HelmetProvider>
+      <Helmet>
+        <title>Home Page</title>
+        <meta name='description' content="Welcome to Rupay Savvy's Home page, your destination for exploring the latest posts on various topics. Discover insightful articles, detailed product reviews, and the latest updates in technology, lifestyle, and more, curated just for you. Stay informed and engaged with our top posts and use our convenient search feature to find exactly what you're looking for. Join our community and enjoy a seamless browsing experience with our user-friendly navigation and informative content. Visit Rupay Savvy now for your daily dose of fresh and relevant content." />
+        </Helmet>
         <NavbarContextFunction>
           <SearchContextFunction>
             <Navbar />
