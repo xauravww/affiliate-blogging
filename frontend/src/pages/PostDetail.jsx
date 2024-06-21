@@ -5,8 +5,8 @@ import { navbarContext } from '../context/NavbarContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
-import 'ldrs/bouncy';
 import RelatedPosts from '../components/RelatedPosts';
+import Loader from '../components/Loader/Loader';
 
 function PostDetail() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -14,7 +14,7 @@ function PostDetail() {
     const [childrenData, setchildrenData] = useState([]);
     const [showCustomBar, setShowCustomBar] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [category, setCategory] = useState([]); // Changed variable name from 'setcategory' to 'setCategory'
+    const [category, setCategory] = useState([]);
     const { id } = useParams();
     const { isNavbarVisible, navOverlayVisibleItems, setnavOverlayVisibleItems } = useContext(navbarContext);
     const navigate = useNavigate();
@@ -26,7 +26,7 @@ function PostDetail() {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true); // Set loading to true before starting the fetch
+            setLoading(true);
             try {
                 const postResponse = await axios.get(`${BACKEND_URL}/posts/${id}`);
                 const postData = postResponse.data.data;
@@ -48,7 +48,7 @@ function PostDetail() {
                 console.log("Error fetching data:", err);
                 navigate('/page-not-found');
             } finally {
-                setLoading(false); // Set loading to false after fetch completes
+                setLoading(false);
             }
         };
 
@@ -68,7 +68,7 @@ function PostDetail() {
         ProductAbout,
         imgUrl,
         ProductUrl,
-        Category // Ensure Category is destructured properly
+        Category
     } = post;
 
     const handleRedirect = () => {
@@ -79,7 +79,7 @@ function PostDetail() {
         <div className='bg-[#F2F2F2]'>
             {loading ? (
                 <div className="flex justify-center items-center h-screen">
-                    <l-bouncy></l-bouncy>
+                    <Loader/>
                 </div>
             ) : (
                 <div className='bg-[#F2F2F2]'>
@@ -176,11 +176,23 @@ function PostDetail() {
                         </div>
                         <TopPosts />
                     </div>
-                    {/* <Footer /> */}
-
+                  {
+                    category.length>0 && (
+                        <div className='category-container my-5'>
+                        <h2 className='text-2xl font-semibold mb-3 ml-5'>Tags</h2>
+                        <div className='flex flex-wrap gap-2 max-w-[70%] overflow-y-scroll px-7 py-0'>
+                            {category.map((cat, index) => (
+                                <span key={index} className='category-box px-3 py-1 bg-blue-600 text-white rounded-lg shadow-md'>
+                                    {cat}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    )
+                  }
+                  {category.length>0 && (  <RelatedPosts category={category} excludeId={id} />)}
                 </div>
             )}
-            <RelatedPosts category={category} excludeId={id} />
         </div>
     );
 }

@@ -6,10 +6,11 @@ import { searchContext } from '../context/SearchContext';
 import TopPosts from '../components/TopPosts';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
-import 'ldrs/bouncy';
+
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'debounce';
+import Loader from '../components/Loader/Loader';
 
 function Home() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -112,7 +113,7 @@ function Home() {
 
                             <div className='posts-map w-full flex flex-col items-center md:w-full'>
                                 {loading ? (
-                                    <l-bouncy></l-bouncy>
+                                    <Loader />
                                 ) : (
                                     filteredPosts.map((post) => (
                                         <HomeComp

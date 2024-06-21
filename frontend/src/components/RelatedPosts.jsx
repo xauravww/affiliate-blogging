@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import 'ldrs/bouncy';
+
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader/Loader';
 
 const RelatedPosts = ({ category, excludeId }) => {
     const [relatedPosts, setRelatedPosts] = useState([]);
@@ -55,7 +56,7 @@ const RelatedPosts = ({ category, excludeId }) => {
                 <h2 className="text-2xl font-semibold mb-4">Related Posts</h2>
                <div className='flex flex-col justify-center items-center'>
                
-               <div className='ml-5 mt-2'><l-bouncy></l-bouncy></div>
+               <div className='ml-5 mt-2'><Loader/></div>
                </div>
                
             </div>
@@ -74,8 +75,8 @@ const RelatedPosts = ({ category, excludeId }) => {
 
     return (
         <div className="px-6 pb-4 bg-[#F2F2F2] rounded-lg shadow-lg cursor-pointer">
-            <h2 className="text-2xl font-semibold mb-4 mt-4">Related Posts</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-2xl font-semibold mb-1 mt-1">Related Posts</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 px-2">
                 {relatedPosts.map(post => (
                     <div
                         key={post.id}
@@ -88,6 +89,9 @@ const RelatedPosts = ({ category, excludeId }) => {
                         {!post.price && <p className="text-lg font-semibold text-red-500">Read More...</p>}
                     </div>
                 ))}
+                {
+                    !relatedPosts.length && <div className=''>No related posts found.</div>
+                }
             </div>
         </div>
     );

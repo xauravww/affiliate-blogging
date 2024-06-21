@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import 'ldrs/bouncy'
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../components/Loader/Loader';
 
 const ContactUsPage = ({ title }) => {
     const [name, setName] = useState('');
@@ -96,7 +97,7 @@ const ContactUsPage = ({ title }) => {
                         </div>
                         {loading && (
                             <div className="flex justify-center mt-4">
-                                 <l-bouncy></l-bouncy>
+                                 <Loader/>
                             </div>
                         )}
                     </form>
