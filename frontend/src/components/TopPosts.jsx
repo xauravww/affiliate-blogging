@@ -46,7 +46,7 @@ function TopPosts() {
                             return (
                                 <li key={index} className='my-3 cursor-pointer visited:text-blue-600' onClick={() => handleNavigation(id)}>
                                     <div className="flex items-center">
-                                        {/* <span className='mr-2'>{index + 1}.</span> */}
+                                        <span className='mr-2'>{index + 1}.</span>
                                         <span className='underline decoration-dotted'>{title}</span>
                                     </div>
                                 </li>
