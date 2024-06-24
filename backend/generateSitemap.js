@@ -1,15 +1,17 @@
 import fs from 'fs';
 import axios from 'axios';
 import path from 'path';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(".env") });
+
 const baseUrl = process.env.RENDER_FRONTEND_URL;
 const backendUrl = process.env.RENDER_BACKEND_URL;
 
 const fetchPostIds = async () => {
   try {
-    const response = await axios.get(`${backendUrl}/posts`);
-    const postIds = response.data.data.map(post => post.id);
+    const response = await axios.get(`${backendUrl}/fetch-post-ids`);
+    const postIds = response.data.data;
+    console.log('Fetched post IDs:', response.data.data.length);
     return postIds;
   } catch (error) {
     console.error('Error fetching post IDs:', error);
@@ -60,7 +62,6 @@ const generateSitemap = async () => {
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
   console.log('Sitemap generated at public/sitemap.xml');
 };
-
-
+fetchPostIds()
 
 export default generateSitemap;

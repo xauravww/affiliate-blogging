@@ -1,20 +1,16 @@
 import { createRequire } from "module";
-
-
 const require = createRequire(import.meta.url);
 const { Client } = require('@notionhq/client');
 require('dotenv').config();
 const authToken = process.env.NOTION_INTEGRATION_TOKEN;
-const notionDbID = process.env.NOTION_DATABASE_ID;  
+const notionDbID = process.env.NOTION_DATABASE_ID;
 
-import sendEmail from "../sendEmail.js"
+import sendEmail from "../sendEmail.js";
 import path from "path";
 
 const notion = new Client({ auth: authToken });
 
-
-
- export const getPostBlocksUsingPageId = async (req, res) => {
+export const getPostBlocksUsingPageId = async (req, res) => {
     try {
         const blockId = req.params.id;
         const response = await notion.blocks.children.list({
@@ -32,15 +28,12 @@ const notion = new Client({ auth: authToken });
             };
         });
 
-        res.send({ data });
+        res.status(200).send({ data });
     } catch (error) {
         console.log(error);
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
-}
-
-
-
+};
 
 export const getPostDetailByPageIds = async (req, res) => {
     try {
@@ -73,7 +66,7 @@ export const getPostDetailByPageIds = async (req, res) => {
             Category: Category?.multi_select.map(cat => cat.name) // Retrieve and map the Category multi-select property
         };
 
-        res.send({ success: true, data: post });
+        res.status(200).send({ success: true, data: post });
     } catch (error) {
         console.log(error);
         if (error.statusCode === 404) {
@@ -81,10 +74,9 @@ export const getPostDetailByPageIds = async (req, res) => {
         }
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
-}
+};
 
-
-export const getAllTopPostsPageIds =  async (req, res) => {
+export const getAllTopPostsPageIds = async (req, res) => {
     try {
         const response = await notion.databases.query({
             database_id: notionDbID,
@@ -108,14 +100,14 @@ export const getAllTopPostsPageIds =  async (req, res) => {
             Status: item?.properties?.Status?.select?.name
         }));
 
-        res.send({ success: true, data: outputArr });
+        res.status(200).send({ success: true, data: outputArr });
     } catch (error) {
         console.log(error);
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
-}
+};
 
-export const postQueriesToNotionDB =  async (req, res) => {
+export const postQueriesToNotionDB = async (req, res) => {
     try {
         const { name, query, email } = req.body;
 
@@ -172,14 +164,13 @@ Best regards,
 Rupay Savvy`
         };
 
-
-        sendEmail(options)
-        res.send({ success: true, data: response });
+        sendEmail(options);
+        res.status(200).send({ success: true, data: response });
     } catch (error) {
         console.log(error);
         res.status(500).send({ success: false, message: "Internal server error" });
     }
-}
+};
 
 export const searchPosts = async (req, res) => {
     try {
@@ -253,7 +244,7 @@ export const searchPosts = async (req, res) => {
         const totalPosts = totalPostsResponse.results.length;
         const totalPages = Math.ceil(totalPosts / parseInt(pageSize));
 
-        res.send({
+        res.status(200).send({
             success: true,
             data: outputArr,
             totalPosts,
@@ -266,8 +257,6 @@ export const searchPosts = async (req, res) => {
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
 };
-
-
 
 export const getAllPostsPageIds = async (req, res) => {
     try {
@@ -322,7 +311,7 @@ export const getAllPostsPageIds = async (req, res) => {
 
         const totalPages = Math.ceil(totalPosts / parseInt(pageSize));
 
-        res.send({
+        res.status(200).send({
             success: true,
             data: outputArr,
             totalPosts,
@@ -335,7 +324,6 @@ export const getAllPostsPageIds = async (req, res) => {
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
 };
-
 
 export const getPageIdsOfSameCategory = async (req, res) => {
     try {
@@ -391,15 +379,41 @@ export const getPageIdsOfSameCategory = async (req, res) => {
             outputArr = outputArr.filter(item => item.id !== excludeId);
         }
 
-        res.send({ success: true, data: outputArr });
+        res.status(200).send({ success: true, data: outputArr });
     } catch (error) {
         console.log(error);
         res.status(500).send({ success: false, message: 'Internal server error' });
     }
 };
 
+export const fetchPostIds = async (req, res) => {
+    try {
+        let postIds = [];
+        let nextCursor = undefined;
 
+        do {
+            const response = await notion.databases.query({
+                database_id: notionDbID,
+                sorts: [
+                    {
+                        timestamp: 'created_time',
+                        direction: 'descending',
+                    },
+                ],
+                start_cursor: nextCursor,
+            });
 
-export const getSiteMap = async (req,res)=>{
+            postIds = postIds.concat(response.results.map(post => post.id));
+            nextCursor = response.next_cursor;
+        } while (nextCursor);
+
+        res.status(200).send({ success: true, data: postIds });
+    } catch (error) {
+        console.error('Error fetching post IDs:', error);
+        res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const getSiteMap = async (req, res) => {
     res.sendFile(path.resolve('public/sitemap.xml'));
-}
+};

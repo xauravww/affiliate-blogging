@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loader from './Loader/Loader';
@@ -40,7 +40,7 @@ function TopPosts() {
                        <Loader/>
                     </div>
                 ) : (
-                    <ol className='list-outside list-decimal'>
+                    <ol className='list-outside list-none'>
                         {topPosts.map((post, index) => {
                             const { id, title } = post;
                             return (
