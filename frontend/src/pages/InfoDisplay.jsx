@@ -13,13 +13,13 @@ function InfoDisplay({ textData, title }) {
 
   return (
    <div className='bg-[#F2F2F2]'>
-       <div className='flex flex-col justify-between w-full mt-3 rounded-md bg-[#F2F2F2] lg:flex-row lg:max-w-[80vw]'>
+       <div className='flex flex-col justify-between w-full mt-3 rounded-md bg-[#F2F2F2] lg:flex-row'>
         <Helmet>
           <title>{title}</title>
           <meta name='description' content={textData} />
         </Helmet>
         
-        <div className='w-full p-5'>
+        <div className='w-full p-5 lg:max-w-[60vw] min-w-[60vw]'>
           <div className='border border-red p-5 bg-white rounded-md'>
             <div className='text-block'>
               {formattedText}

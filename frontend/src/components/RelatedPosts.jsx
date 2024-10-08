@@ -75,7 +75,7 @@ const RelatedPosts = ({ category, excludeId }) => {
 
     return (
         <div className="px-6 pb-4 bg-[#F2F2F2] rounded-lg shadow-lg cursor-pointer">
-            <h2 className="text-2xl font-semibold mb-1 mt-1">Related Posts</h2>
+            <h2 className="text-2xl font-semibold mb-6 mt-1">Related Posts</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
                 {relatedPosts.map(post => (
                     <div

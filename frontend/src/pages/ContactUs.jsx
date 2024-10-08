@@ -34,12 +34,12 @@ const ContactUsPage = ({ title }) => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-[40vh]">
             <Helmet>
                 <title>{title}</title>
                 <meta name="description" content="Get in touch with us by filling out the form below." />
             </Helmet>
-            <div className="flex-grow flex items-center justify-center bg-gray-100 py-12">
+            <div className="flex-grow min-h-[80vh] flex items-center justify-center bg-gray-100 py-12">
                 <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
                     <h1 className="text-2xl font-bold mb-6 text-center">Contact Us</h1>
                     <form onSubmit={handleSubmit}>

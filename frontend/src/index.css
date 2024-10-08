@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 
-*{
-    /* border: 1px solid red; */
-} 
+/* *{
+    border: 1px solid red;
+}  */
 
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
