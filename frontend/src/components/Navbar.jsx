@@ -2,11 +2,12 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { searchContext } from "../context/SearchContext";
 import { navbarContext } from "../context/NavbarContext";
-import Logo from "../../public/assests/rupay-savvy-transparent.png";
-import HamburgerSvg from "../../public/assests/hamburger.svg";
+import Logo from "../../public/assets/rupay-savvy-transparent.png";
+import HamburgerSvg from "../../public/assets/hamburger.svg";
 import { RxCross2 } from "react-icons/rx";
 import { BiSearch } from "react-icons/bi";
 import { animateScroll as scroll } from "react-scroll";
+import scrolltoTopIcon from "/assets/arrow-up.svg"
 function Navbar() {
   const elementRef = useRef(null);
   const navigate = useNavigate();
@@ -288,8 +289,8 @@ function Navbar() {
         </div>
       </div>
       <img
-      src="../../public/assests/arrow-up.svg"
-      className={`h-10 w-10 fixed bottom-10 right-10 z-[15] transition-transform duration-300 ease-in-out ${isHoverScrollToTopIcon ? "scale-125" : "scale-100"}`}
+      src={scrolltoTopIcon}
+      className={`h-10 w-10 rotate-180 fixed bottom-10 right-10 z-[15] transition-transform duration-300 ease-in-out ${isHoverScrollToTopIcon ? "scale-125" : "scale-100"}`}
       onClick={() => {
         scroll.scrollToTop()
       }}

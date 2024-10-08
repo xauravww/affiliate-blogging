@@ -7,16 +7,18 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShimmerHomeComp from "../components/ShimmerUIs/ShimmerHomeComp";
 import { searchContext } from "../context/SearchContext";
+import { scroller, Element , animateScroll as scroll } from "react-scroll"; // Import from react-scroll
 
 function Home() {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nextCursor, setNextCursor] = useState(null);
-  const [showShimmer, setShowShimmer] = useState(false); // New state for shimmer
+  const [showShimmer, setShowShimmer] = useState(false); 
   const { searchQuery } = useContext(searchContext);
 
   const fetchData = async () => {
+    scroll.scrollToTop()
     setLoading(true);
     setShowShimmer(true);
 
@@ -27,22 +29,21 @@ function Home() {
         response = await axios.get(`${BACKEND_URL}/search`, {
           params: { query: searchQuery },
         });
-        setPosts(response.data.data); // Clear previous posts for new search
-        setNextCursor(response.data.nextCursor); // Set cursor for next fetch
+        setPosts(response.data.data); 
+        setNextCursor(response.data.nextCursor);
       } else {
         response = await axios.get(`${BACKEND_URL}/posts`, {
           params: { startCursor: nextCursor },
         });
 
-        // Append new posts with existing ones, avoiding duplicates based on IDs
         setPosts((prevPosts) => [
-          //coommeneted code can be used if u want to stack up all the searched post on the top
-          //   ...prevPosts,
-          //   ...response.data.data.filter(post => !prevPosts.some(p => p.id === post.id)),
           ...response.data.data,
         ]);
-        setNextCursor(response.data.nextCursor); // Set cursor for next fetch
+        setNextCursor(response.data.nextCursor);
       }
+      
+    //   scroll.scrollToTop()
+
     } catch (error) {
       console.log("Error fetching data:", error);
       toast.error("Error fetching data...");
@@ -85,22 +86,24 @@ function Home() {
             {(!loading || !showShimmer) && filteredPosts.length === 0 && !loading && !showShimmer ? (
               <p>No posts available.</p>
             ) : (
-                (!loading || !showShimmer) && filteredPosts.map((post) => (
-                <HomeComp
-                  key={post.id}
-                  CurrentPrice={post.CurrentPrice}
-                  DiscountRate={post.DiscountRate}
-                  Name={post.Name}
-                  OldPrice={post.OldPrice}
-                  PostDate={post.PostDate}
-                  ProductAbout={post.ProductAbout}
-                  ProductTitle={post.ProductTitle}
-                  blockId={post.blockId}
-                  id={post.id}
-                  imgUrl={post.imgUrl}
-                  searchQuery={searchQuery}
-                  ProductUrl={post.ProductUrl}
-                />
+              (!loading || !showShimmer) && filteredPosts.map((post, index) => (
+                <Element key={post.id} name={index === filteredPosts.length - 1 ? 'latestPost' : ''}>
+                  <HomeComp
+                    key={post.id}
+                    CurrentPrice={post.CurrentPrice}
+                    DiscountRate={post.DiscountRate}
+                    Name={post.Name}
+                    OldPrice={post.OldPrice}
+                    PostDate={post.PostDate}
+                    ProductAbout={post.ProductAbout}
+                    ProductTitle={post.ProductTitle}
+                    blockId={post.blockId}
+                    id={post.id}
+                    imgUrl={post.imgUrl}
+                    searchQuery={searchQuery}
+                    ProductUrl={post.ProductUrl}
+                  />
+                </Element>
               ))
             )}
 
@@ -124,10 +127,10 @@ function Home() {
                 </p>
                 <button
                   className="load-more-btn bg-[#FFA500] text-white font-bold py-2 px-4 rounded my-4"
-                  onClick={()=>{
-                    setPosts([])
+                  onClick={() => {
+                    setPosts([]);
                     toast.success("All posts loaded successfully!");
-                    fetchData(); // Fetch new data after success toast
+                    fetchData();
                   }}
                 >
                   Load All Posts
