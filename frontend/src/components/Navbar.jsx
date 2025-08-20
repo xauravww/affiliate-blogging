@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { searchContext } from "../context/SearchContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ArrowRight } from "lucide-react";
