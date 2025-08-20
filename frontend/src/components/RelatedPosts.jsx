@@ -74,24 +74,49 @@ const RelatedPosts = ({ category, excludeId }) => {
     }
 
     return (
-        <div className="px-6 pb-4 bg-[#F2F2F2] rounded-lg shadow-lg cursor-pointer">
-            <h2 className="text-2xl font-semibold mb-6 mt-1">Related Posts</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-neutral-200">
+            <div className="flex items-center gap-3 mb-8">
+                <div className="w-1 h-8 bg-primary-500 rounded-full"></div>
+                <h2 className="text-3xl font-display font-bold text-neutral-900">Similar Products</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedPosts.map(post => (
                     <div
                         key={post.id}
-                        className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                        className="group bg-neutral-50 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-neutral-200 hover:border-primary-200"
                         onClick={() => handleNavigation(post.id)}
                     >
-                        <img src={post.imgUrl} alt={post.title} className="w-full h-48 object-cover rounded-md mb-4" />
-                        <h3 className="text-xl font-medium mb-2">{post.title}</h3>
-                        {post.price && <p className="text-lg font-semibold text-green-500">₹{post.price}</p>}
-                        {!post.price && <p className="text-lg font-semibold text-red-500">Read More...</p>}
+                        <div className="relative overflow-hidden">
+                            <img
+                                src={post.imgUrl}
+                                alt={post.title}
+                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                        </div>
+                        <div className="p-6">
+                            <h3 className="text-lg font-semibold text-neutral-900 mb-3 line-clamp-2 group-hover:text-primary-600 transition-colors duration-200">
+                                {post.title}
+                            </h3>
+                            <div className="flex items-center justify-between">
+                                {post.price ? (
+                                    <p className="text-xl font-bold text-primary-600">₹{post.price}</p>
+                                ) : (
+                                    <p className="text-primary-600 font-medium">Read More</p>
+                                )}
+                                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center group-hover:bg-primary-500 transition-colors duration-200">
+                                    <span className="text-primary-600 group-hover:text-white text-sm">→</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 ))}
-                {
-                    !relatedPosts.length && <div className=''>No related posts found.</div>
-                }
+                {!relatedPosts.length && (
+                    <div className="col-span-full text-center py-12">
+                        <div className="text-6xl mb-4">🔍</div>
+                        <p className="text-neutral-500 text-lg">No similar products found.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -15,8 +15,15 @@ function InfoDisplay({ textData, title }) {
    <div className='bg-[#F2F2F2]'>
        <div className='flex flex-col justify-between w-full mt-3 rounded-md bg-[#F2F2F2] lg:flex-row'>
         <Helmet>
-          <title>{title}</title>
-          <meta name='description' content={textData} />
+          <title>{title} - Rupay Savvy</title>
+          <meta name='description' content={textData.substring(0, 160)} />
+          <meta property="og:title" content={`${title} - Rupay Savvy`} />
+          <meta property="og:description" content={textData.substring(0, 160)} />
+          <meta property="og:type" content="article" />
+          <meta name="twitter:card" content="summary" />
+          <meta name="twitter:title" content={`${title} - Rupay Savvy`} />
+          <meta name="twitter:description" content={textData.substring(0, 160)} />
+          <link rel="canonical" href={`https://rupaysavvy.in/${title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`} />
         </Helmet>
         
         <div className='w-full p-5 lg:max-w-[60vw] min-w-[60vw]'>

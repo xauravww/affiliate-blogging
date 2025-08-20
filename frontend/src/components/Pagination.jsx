@@ -46,18 +46,16 @@ const Pagination = ({ totalPosts, postPerPage, setCurrentPage, currentPage, tota
   };
 
   return (
-    <div className='pagination-container flex justify-center gap-2 w-full bg-[#F2F2F2] font-[arial]'>
+    <div className='pagination-container flex justify-center gap-3 w-full bg-gradient-to-br from-neutral-50 to-white py-8'>
       {getDisplayedPages().map((page, index) => (
         <button
           key={index}
-          className='text-white text-2xl px-2 py-1 font-bold rounded-full'
-          style={
+          className={`min-w-[44px] h-11 px-3 py-2 font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 ${
             page === currentPage
-              ? { backgroundColor: '#FFA500', color: 'white' }
-              : { backgroundColor: 'black' }
-          }
+              ? 'bg-primary-500 text-white shadow-lg hover:bg-primary-600'
+              : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 shadow-sm'
+          }`}
           onClick={() => {
-
             if (typeof page === 'number') {
               setLoading(true)
               setCurrentPage(page);

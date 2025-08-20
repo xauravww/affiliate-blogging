@@ -1,4 +1,23 @@
 User-agent: *
+Allow: /
 
+# Block access to admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+
+# Allow search engines to crawl important pages
+Allow: /
+Allow: /contact-us
+Allow: /affiliate-disclosure
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+Allow: /disclaimer
+
+# Sitemap location
 Sitemap: https://backend.rupaysavvy.in/get-sitemap
+Sitemap: https://rupaysavvy.in/sitemap.xml
+
+# Crawl delay (optional - helps prevent overloading)
+Crawl-delay: 1
 
