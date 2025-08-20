@@ -12,7 +12,6 @@ import TrendingCategories from "../components/TrendingCategories";
 import StatsCounter from "../components/StatsCounter";
 import FeaturesShowcase from "../components/FeaturesShowcase";
 import NewsletterSection from "../components/NewsletterSection";
-
 import scrolltoTopIcon from "/assets/arrow-up.svg";
 
 function Home() {
@@ -138,7 +137,7 @@ function Home() {
         {/* ... other meta tags ... */}
       </Helmet>
 
-      {/* ... Hero Section and other components (no changes here) ... */}
+      {/* Hero Section with button scroll logic */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-48 -translate-y-48" />
@@ -253,7 +252,8 @@ function Home() {
                 </div>
               </div>
 
-              <div className="lg:w-80">
+              {/* --- MODIFIED: Added responsive width and overflow classes --- */}
+              <div className="lg:w-80 lg:flex-shrink-0">
                 <TopPosts />
               </div>
             </div>
